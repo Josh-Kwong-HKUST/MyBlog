@@ -2,7 +2,10 @@
 
 ###### Latest edited: Sep 20, 2023
 
+<p>
+
 ## auto
+
 **auto** is a new keyword introduced in C++11. It is used to automatically deduce the type of a variable from its initializer. It is mostly used in generic programming when the type of the variable is dependent on the type of the initializer. It is also used in range-based for loop to automatically deduce the data type of the loop variable.
 
 Let's say we have a vector of integers and we want to iterate over it.
@@ -33,7 +36,7 @@ for(auto i : v){
     }
 ```
 
-#### Some rules of auto
+### **Some rules of auto**
 ```
 int i = 10;
 auto a = i, &b = i, *c = &i; // a is int, b is int&, c is int*
@@ -62,7 +65,7 @@ void func2() {
 - auto can't deduce template parameter
 - auto can't deduce the type of uninitialized variable
 - auto can't deduce different types of variables in one statement
-#### auto and _const & volatile_
+### **auto and _const & volatile_**
 ```
 int i = 0;
 auto *a = &i;           // a is int*
@@ -75,7 +78,7 @@ auto &g = f;            // g is const int&
 ```
 - while not declared as refernce or pointer, auto will ignore the **const** and **volatile** qualifier
 - vice versa
-#### When to use *auto*?
+### **When to use *auto*?**
 There is no absulote answer to this question. But if utlizing **auto** makes the code cleaner and more readable, why not?
 ```
 auto func = [&] {   // we don't care what's the return type of this lambda function anyway...
@@ -84,3 +87,5 @@ auto func = [&] {   // we don't care what's the return type of this lambda funct
 auto asyncfunc = std::async(std::launch::async, func);
 // as we are too lazy to memorize what the return type is, this is the perfect spot for auto
 ```
+</p>
+***

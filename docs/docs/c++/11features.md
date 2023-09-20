@@ -86,4 +86,4 @@ auto func = [&] {   // we don't care what's the return type of this lambda funct
 
 auto asyncfunc = std::async(std::launch::async, func);
 // as we are too lazy to memorize what the return type is, this is the perfect spot for auto
-``````
+```

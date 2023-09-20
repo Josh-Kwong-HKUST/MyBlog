@@ -68,10 +68,8 @@ int i = 0;
 auto *a = &i;           // a is int*
 auto &b = i;            // b is int&
 auto c = b;             // c is int, reference is ignored
-
 const auto d = i;       // d is const int
 auto e = d;             // e is int
-
 const auto& f = e;      // f is onst int&
 auto &g = f;            // g is const int&
 ```
@@ -83,7 +81,6 @@ There is no absulote answer to this question. But if utlizing **auto** makes the
 auto func = [&] {   // we don't care what's the return type of this lambda function anyway...
     cout << "xxx";
 }; 
-
 auto asyncfunc = std::async(std::launch::async, func);
 // as we are too lazy to memorize what the return type is, this is the perfect spot for auto
 ```

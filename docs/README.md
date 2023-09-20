@@ -2,4 +2,4 @@
 
 >
 
-# Tesing CI/CD process
+# Testing CI/CD process

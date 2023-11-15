@@ -2,7 +2,8 @@
 
 - C++
 
-  - [C++11 new features](/docs/c++/11features.md)
-  - [C++14 new features](/docs/c++/14features.md)
+  - [lambda expression](/docs/c++/lambda.md)
+  - [auto](/docs/c++/auto.md)
   - [inline function](/docs/c++/inline.md)
   - [extern](/docs/c++/extern.md)
+  - [smart pointer](/docs/c++/smartpointer.md)

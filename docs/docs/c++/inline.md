@@ -3,7 +3,7 @@
 ***
 ### What is inline function?
 Similar to **define**, **inline** is a keyword to replace the function invoke with the function body during compilation time. For example, in the below C++ code, each invoke of function **check** wil be replaced by **(i % 2) ? "odd" : "even"**.
-```
+```cpp
 inline const char* check(int num){
     return (num % 2) ? "odd" : "even";
 }

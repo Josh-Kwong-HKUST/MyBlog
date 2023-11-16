@@ -13,10 +13,11 @@ From time to time I saw this I wanted to smash my laptop! Therefore I turn to sm
 - Dangling pointer
 - Segmentation fault (you can't touch there my man)
 
-### Header file
+### Header file required
 ```cpp
 #include <memory>
 ```
+***
 ### auto_ptr
 **auto_ptr** is the first smart pointer template introduced in C++98. The way we use it is similar to those who will be introduced later.
 ```cpp
@@ -52,7 +53,7 @@ vector<int>* new_ptr = new vector<int>();
 ptr.reset(new_ptr);    // ptr now saves new_ptr
 ```
 
-### Suggestion
+#### Suggestion
 don't declare a smart pointer as a global variable or as a pointer, it's meaningless
 ```cpp
 auto_ptr<Test> *tp = new auto_ptr<Test>(new Test);  // don't do this
@@ -93,6 +94,7 @@ cout << "vec[1]：" << *vec[1] << endl;
 ```cpp
 auto_ptr<int[]> array(new int[5]);  // can't do this
 ```
+***
 ### unique_ptr
 **unique_ptr** is almost the same as **auto_ptr**, except that:
 1. **exclusive ownership**: two pointers can't point to the same object
@@ -106,7 +108,7 @@ p1 = std::move(p2);                     // allow, p2 releases its resource
 unique_ptr<int[]> array(new int[5]);    // allow
 ``` 
 
-### release memory actively
+#### release memory actively
 ```cpp
 unique_ptr<Test> t(new Test);
 // any of these works
@@ -115,17 +117,17 @@ t = nullptr;
 t.reset();
 ```
 
-### transfer ownership
+#### transfer ownership
 ```cpp
 Test* t1 = t.release();
 ```
 
-### reset
+#### reset
 ```cpp
 t.reset(new Test);
 ```
 
-### Be careful
+#### Be careful
 Just like **monogamy**, **unique_ptr** don't share one pointer they save. Look at this example:
 ```cpp
 Wife* w1 = new Wife();
@@ -138,8 +140,8 @@ cout << *husband << endl;            // Segmentation fault
 Note that when **husband2** takes over **w1**, it firstly takes away the ownership to **w1** of **husband**. So **husband** only has a **nullptr** afterwards.
 
 For the sake of multiple smart pointers pointing to the same object, C++11 introduces **shared_ptr**.
-
-## shared_ptr
+***
+### shared_ptr
 **shared_ptr** keeps tract of the number of referencing to the object, which can be gained by member function use_count();
 ```cpp
 shared_ptr<Person> sp1;
@@ -161,7 +163,7 @@ cout << "sp2	use_count() = " << sp2.use_count() << endl;         // 3
 cout << "sp2	use_count() = " << sp3.use_count() << endl << endl; // 3
 ```
 when the last pointer to the object is dead, i.e. use_count() returns 0, the memory that this **shared_ptr** manages is freed.
-### Construction
+#### Construction
 1). **shared_ptr< T > sp1**:  a null **shared_ptr**
 
 ```
@@ -200,7 +202,7 @@ shared_ptr<Person> sp7(new Person(8), [](){
 shared_ptr<int> up3 = make_shared<int>(2);
 ```
 
-### To be noted
+#### To be noted
 1) **shared_ptr** inside a **container** should be **erased** when it is no longer used, since it will **NOT** release the memory automatically like a normal **shared_ptr**.
 ```cpp
 list<shared_ptr<string>>pstrList;
@@ -262,13 +264,13 @@ A **lock** is required for multithreading with **shared_ptr**.
 If object A has a **shared_ptr** member pointing to object B, whereas object B also has a **shared_ptr** member pointing to object A, the memory that A and B occupies will **NEVER** be released.(Not hard to derive this conclusion).
 
 But in reality, from time to time we need cross-reference. Hence **weak_ptr** is introduced.
-
-## weak_ptr
+***
+### weak_ptr
 **weak_ptr** is introduced for collaborating with **shared_ptr**. 
 1) It does not overload * and -> operator, which means it cannot mutate the memory it points to. It can use **lock()** to get a **shared_ptr** to the memory
 2) It won't increase or decrease the number of reference recorded by a **shared_ptr**
 3) It acts as the observer of the resource held by a **shared_ptr**. It can use **expired()** to check whether **use_count()** returns 0 (but much faster)
-### Construction
+#### Construction
 ```cpp
 weak_ptr<int> wp1;                  // NULL
 weak_ptr<int> wp2(wp1);             // copy construction
@@ -285,7 +287,7 @@ if (wp3.expired()){
     cout << "Expired!\n";
 }   
 ```
-### Thread security for shared objects
+#### Thread security for shared objects
 In multithreading scenario, it is possible that when a object is being destructed, its method is used by other threads. For example:
 ```cpp
 class Test {

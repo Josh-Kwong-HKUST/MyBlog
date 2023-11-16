@@ -3,27 +3,27 @@
 **auto** is a new keyword introduced in C++11. It is used to automatically deduce the type of a variable from its initializer. It is mostly used in generic programming when the type of the variable is dependent on the type of the initializer. It is also used in range-based for loop to automatically deduce the data type of the loop variable.
 
 Let's say we have a vector of integers and we want to iterate over it.
-```
+```cpp
 # auto.cpp
 #include <vector>
 std::vector<int> v = {1,2,3,4,5};
 ```
 Without **auto**, a typical way to iterate over a vector looks like this:
-```
+```cpp
 # auto.cpp
 for(std::vector<int>::iterator it = v.begin(); it < v.end(); it++){
         std::cout << *it << std::endl;
     }
 ```
 which is quite verbose. With **auto**, we can write it like this:
-```
+```cpp
 # auto.cpp
 for(auto it = v.begin(); it < v.end(); it++){
         std::cout << *it << std::endl;
     }
 ```
 or we can even use a new syntax introduced in C++11 called **range-based for loop**:
-```
+```cpp
 # auto.cpp
 for(auto i : v){
         std::cout << i << std::endl;
@@ -31,13 +31,13 @@ for(auto i : v){
 ```
 
 ### **Some rules of auto**
-```
+```cpp
 int i = 10;
 auto a = i, &b = i, *c = &i; // a is int, b is int&, c is int*
 auto d = 0, f = 1.0;         // error，since d is int while f is double, compiler can't deduce
 auto e;                      // error，auto can't deduce the type of uninitialized variable
 ```
-```
+```cpp
 void func(auto value) {}     // error，auto can't deduce the type of function parameters
 
 class A {
@@ -60,7 +60,7 @@ void func2() {
 - auto can't deduce the type of uninitialized variable
 - auto can't deduce different types of variables in one statement
 ### **auto and _const & volatile_**
-```
+```cpp
 int i = 0;
 auto *a = &i;           // a is int*
 auto &b = i;            // b is int&
@@ -74,7 +74,7 @@ auto &g = f;            // g is const int&
 - vice versa
 ### **When to use *auto*?**
 There is no absulote answer to this question. But if utlizing **auto** makes the code cleaner and more readable, why not?
-```
+```cpp
 auto func = [&] {   // we don't care what's the return type of this lambda function anyway...
     cout << "xxx";
 }; 

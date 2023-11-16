@@ -14,12 +14,12 @@ From time to time I saw this I wanted to smash my laptop! Therefore I turn to sm
 - Segmentation fault (you can't touch there my man)
 
 ### Header file
-```
+```cpp
 #include <memory>
 ```
 ### auto_ptr
 **auto_ptr** is the first smart pointer template introduced in C++98. The way we use it is similar to those who will be introduced later.
-```
+```cpp
 // point to a vector<int>
 auto_ptr< vector<int> > ptr(new vector<int>());
 cout << ptr->size() << endl;
@@ -30,13 +30,13 @@ In fact, **auto_ptr** is wrapping the so called **naked pointer** into an object
 
 There are three common methods used for smart pointers:
 1. **get()**  returns the address of the pointer it saves
-```
+```cpp
 auto_ptr< vector<int> > ptr = new vector<int>();
 cout << ptr.get() << endl;
 ```
 
 2. **release()** decouples the smart pointer object with the saved pointer and return the naked pointer
-```
+```cpp
 auto_ptr< vector<int> > ptr(new vector<int>());
 vector<int>* origin = ptr.release();
 delete origin;
@@ -45,53 +45,52 @@ delete origin;
 ```
 
 3. **reset()** can take another pointer as argument(optional), and free the pointer it manages if they are different
-```
+```cpp
 auto_ptr< vector<int> > ptr(new vector<int>());
 ptr.reset();   // delete the pointer it saves
 vector<int>* new_ptr = new vector<int>();
 ptr.reset(new_ptr);    // ptr now saves new_ptr
 ```
 
-####Suggestion
+### Suggestion
 don't declare a smart pointer as a global variable or as a pointer, it's meaningless
-```
+```cpp
 auto_ptr<Test> *tp = new auto_ptr<Test>(new Test);  // don't do this
 ```
 Note that **auto_ptr** is replaced by **unique_ptr** in C++11. Because
 1. copying or assigning a smart pointer to another will change the ownership of the resource.
-```
+```cpp
 auto_ptr<string> p1(new string("Hi!"));
 auto_ptr<string> p2(new string("I'm Josh."));
-
 cout << "p1：" << p1.get() << endl; // 012A8750
 cout << "p2：" << p2.get() << endl; // 012A8510
-
-p1 = p2;	
+  
+p1 = p2;	// assigning p2 to p1 leads to the loss of ownership to the resource of p2
+  
 cout << "after p1 = p2 :" << endl;
 cout << "p1：" << p1.get() << endl; // 012A8510
 cout << "p2：" << p2.get() << endl; // 00000000
-// assigning p2 to p1 leads to the loss of ownership to the resource of p2
 ```
 2. Using **auto_ptr** for STL is risky, since it requires copying and assigning value
-```
+```cpp
 vector<auto_ptr<string>> vec;
 auto_ptr<string> p3(new string("I'm P3"));
 auto_ptr<string> p4(new string("I'm P4"));
-
+  
 // have to use move semantic before pushing back to the container
 vec.push_back(std::move(p3));
 vec.push_back(std::move(p4));
-
+  
 cout << "vec.at(0)：" <<  *vec.at(0) << endl;
 cout << "vec[1]：" <<  *vec[1] << endl;
-
+  
 // here comes the risk
 vec[0] = vec[1];	// Assigning!
 cout << "vec.at(0)：" << *vec.at(0) << endl; // trying to access NULL
 cout << "vec[1]：" << *vec[1] << endl;
 ```
 3. not supporting memory management for array
-```
+```cpp
 auto_ptr<int[]> array(new int[5]);  // can't do this
 ```
 ### unique_ptr
@@ -99,7 +98,7 @@ auto_ptr<int[]> array(new int[5]);  // can't do this
 1. **exclusive ownership**: two pointers can't point to the same object
 2. not allows **left-value** copy construction or assigning, but allows temporary **right-value** move construction or assigning
 3. supports array memory management
-```
+```cpp
 p1 = p2;                                // ban left-value assigning
 unique_ptr<string> p3(p2);              // ban left-value copy construction
 unique_ptr<string> p3(std::move(p1));   // allow
@@ -108,7 +107,7 @@ unique_ptr<int[]> array(new int[5]);    // allow
 ``` 
 
 ### release memory actively
-```
+```cpp
 unique_ptr<Test> t(new Test);
 // any of these works
 t = NULL;
@@ -117,18 +116,18 @@ t.reset();
 ```
 
 ### transfer ownership
-```
+```cpp
 Test* t1 = t.release();
 ```
 
 ### reset
-```
+```cpp
 t.reset(new Test);
 ```
 
 ### Be careful
 Just like **monogamy**, **unique_ptr** don't share one pointer they save. Look at this example:
-```
+```cpp
 Wife* w1 = new Wife();
 unique_ptr<Wife> husband(w1);   // husband now manages w1
 unique_ptr<Wife> husband2;
@@ -142,7 +141,7 @@ For the sake of multiple smart pointers pointing to the same object, C++11 intro
 
 ## shared_ptr
 **shared_ptr** keeps tract of the number of referencing to the object, which can be gained by member function use_count();
-```
+```cpp
 shared_ptr<Person> sp1;
 
 shared_ptr<Person> sp2(new Person(2));
@@ -171,39 +170,39 @@ Person *person1 = new Person(1);
 sp1.reset(person1);
 ```
 2). **shared_ptr< T > sp2(new T())**: 
-```
+```cpp
 shared_ptr<Person> sp2(new Person(2));
 shared_ptr<Person> sp3(sp1);
 ```
 
 3). **shared_ptr<T[]> sp4**: a null **shared_ptr**，which can point to array of type T, supported after C++17
-```
+```cpp
 shared_ptr<Person[]> sp4;
 ```
 
 4). **shared_ptr<T[]> sp5(new T[] { … })**:  point to array of type T, supported after C++17
-```
+```cpp
 shared_ptr<Person[]> sp5(new Person[5] { 3, 4, 5, 6, 7 });
 ```
 
 5). **shared_ptr< T > sp6(NULL, D())**: a null **shared_ptr**，accept a function(can also use a lambda expression) as the deleter to free the memory
-```
+```cpp
 shared_ptr<Person> sp6(NULL, DestructPerson());
 ```
 6). **shared_ptr< T > sp7(new T(), D())**: a **shared_ptr** pointing to type T，accept a function(usually a lambda expression) as the deleter to free the memory
-```
+```cpp
 shared_ptr<Person> sp7(new Person(8), [](){
     /*deleting...*/
 });
 ```
 7). **make_shared** function: allocates a piece of memory for the object and return the pointer to it (**recommended** for better efficiency in memory management)
-```
+```cpp
 shared_ptr<int> up3 = make_shared<int>(2);
 ```
 
 ### To be noted
 1) **shared_ptr** inside a **container** should be **erased** when it is no longer used, since it will **NOT** release the memory automatically like a normal **shared_ptr**.
-```
+```cpp
 list<shared_ptr<string>>pstrList;
     pstrList.push_back(make_shared<string>("1111"));
     pstrList.push_back(make_shared<string>("2222"));
@@ -229,25 +228,25 @@ list<shared_ptr<string>>pstrList;
     }
 ```
 2) A self-defined **deleter** must be provided for **Dynamic array** memory management of **shared_ptr**
-```
+```cpp
 shared_ptr<DelTest> p(new DelTest[10],[](DelTest *p){delete[] p;});
 /* use lambda function as a self-defined deleter */
 ```
 3) **Never, ever** initialize multiple **shared_ptr** using the same pointer
 4) Cannot use a **naked pointer** for initializing
-```
+```cpp
 // shared_ptr constructor is explicit type，cannot do this
 std::shared_ptr<int> p1 = new int(); // can't implicitly convert, type mismatch
 int* p11 = new int;
 std::shared_ptr<int> p12(p11);  // no problem
 ```
 5) **DO NOT** use a pointer in stack (instead of **heap**) for initializing
-```
+```cpp
 int x = 12;
 std::shared_ptr<int> ptr(&x);   // no way bro
 ```
 6) **DO NOT** use the return value of get() of a **shared_ptr** to initialize another **shared_ptr**
-```
+```cpp
 Base *a = new Base();
 std::shared_ptr<Base> p1(a);
 std::shared_ptr<Base> p2(p1.get());
@@ -270,15 +269,15 @@ But in reality, from time to time we need cross-reference. Hence **weak_ptr** is
 2) It won't increase or decrease the number of reference recorded by a **shared_ptr**
 3) It acts as the observer of the resource held by a **shared_ptr**. It can use **expired()** to check whether **use_count()** returns 0 (but much faster)
 ### Construction
-```
+```cpp
 weak_ptr<int> wp1;                  // NULL
 weak_ptr<int> wp2(wp1);             // copy construction
 weak_ptr<int> wp2 = wp1;            // copy construction
-
+  
 shared_ptr<int> sp(new int);
 weak_ptr<int> wp3(sp);              // can construct from a shared_ptr
 weak_ptr<int> wp3 = sp;
-
+  
 shared_ptr<int> sp1 = wp3.lock()    //return a shared_ptr
 if (wp3.expired()){
     /* expired() returns true when the memory is released */
@@ -288,7 +287,7 @@ if (wp3.expired()){
 ```
 ### Thread security for shared objects
 In multithreading scenario, it is possible that when a object is being destructed, its method is used by other threads. For example:
-```
+```cpp
 class Test {
   public:
     Test(int id) : m_id(id) {}
@@ -298,12 +297,12 @@ class Test {
   private:
     int m_id;
 };
-
+  
 void thread1(Test* t) {
   std::this_thread::sleep_for(std::chrono::seconds(2));
   t->showID();  // object's method is used when it is destructing
 }
-
+  
 int main()
 {
   Test* t = new Test(10);
@@ -316,7 +315,7 @@ int main()
 }
 ```
 Thread t sleeps for 2 seconds before calling the object method, at that time the object is dead already. To prevent this, let's take a look at the below implementation with **shared_ptr** and **weak_ptr**:
-```
+```cpp
 class Test {
   public:
     Test(int id) : m_id(id) {}
@@ -327,7 +326,7 @@ class Test {
   private:
     int m_id;
 };
-
+  
 void thread2(std::weak_ptr<Test> t) {
   std::this_thread::sleep_for(std::chrono::seconds(1));
   std::shared_ptr<Test> sp = t.lock();  // return NULL when the memory has been released
@@ -336,7 +335,7 @@ void thread2(std::weak_ptr<Test> t) {
   else
     std::cout << "sp null" << std::endl;
 }
-
+  
 int main()
 {
     std::thread t2;
@@ -354,5 +353,7 @@ int main()
 
 ### Conclusion
 **unique_ptr** : monogamy
+
 **shared_ptr** : Polygamy
+
 **weak_ptr**   : can't live without Polygamy

@@ -7,3 +7,4 @@
   - [inline function](/docs/c++/inline.md)
   - [extern](/docs/c++/extern.md)
   - [smart pointer](/docs/c++/smartpointer.md)
+  - [casting](/docs/c++/casting.md)
